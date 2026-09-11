@@ -2,3 +2,4 @@
 deneme yazıları
 komutları yenile
 denemeler
+ders hakkında düşünceler
