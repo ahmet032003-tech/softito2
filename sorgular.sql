@@ -16,3 +16,11 @@ SELECT * FROM users;
 UPDATE users SET email = 'ahmetsarsilmaz@hotmail.com' WHERE id = 1;
 DELETE FROM users WHERE id = 3;
 SELECT * FROM users;
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_number TEXT NOT NULL,
+    user_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
