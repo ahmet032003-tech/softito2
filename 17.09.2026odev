@@ -1,0 +1,32 @@
+CREATE TABLE bolumler (
+    bolum_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    bolum_adi VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- 2. ÖĞRENCİLER TABLOSU
+CREATE TABLE ogrenciler (
+    ogrenci_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ogrenci_no VARCHAR(20) NOT NULL UNIQUE,
+    ad VARCHAR(50) NOT NULL,
+    soyad VARCHAR(50) NOT NULL,
+    bolum_id INTEGER NOT NULL,
+    FOREIGN KEY (bolum_id) REFERENCES bolumler(bolum_id)
+);
+
+CREATE TABLE dersler (
+    ders_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ders_kodu VARCHAR(10) NOT NULL UNIQUE,
+    ders_adi VARCHAR(100) NOT NULL,
+    akts INTEGER NOT NULL,
+    bolum_id INTEGER NOT NULL,
+    FOREIGN KEY (bolum_id) REFERENCES bolumler(bolum_id)
+);
+
+CREATE TABLE ogrenci_dersleri (
+    ogrenci_id INTEGER NOT NULL,
+    ders_id INTEGER NOT NULL,
+    kayit_tarihi DATE DEFAULT CURRENT_DATE,
+    PRIMARY KEY (ogrenci_id, ders_id),
+    FOREIGN KEY (ogrenci_id) REFERENCES ogrenciler(ogrenci_id) ON DELETE CASCADE,
+    FOREIGN KEY (ders_id) REFERENCES dersler(ders_id) ON DELETE CASCADE
+);
