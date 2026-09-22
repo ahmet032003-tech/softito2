@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Altın kural: Tüm projede kutu modelini sıfırlama ve border-box yapma */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            padding: 20px;
+            background-color: aliceblue;
+        }
+        
+        .box-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* border-box kurtarıcı */
+        .fixed-box {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 24px;
+            border: 6px solid lightgreen;
+            background-color: antiquewhite;
+            border-radius: 12px;
+        }
+
+        /* Metin taşmasını engelleme (mobil) */
+        .truncate-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%; /* max-width: 25px yerine kutunun genişliğini kaplaması için */
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 12px;
+            border: 1px solid whitesmoke;
+        }
+    </style>
+</head>
+<body>
+    <div class="box-container">
+        <h3>border-box (Taşma Yapmayan Eleman)</h3>
+        <div class="fixed-box">
+            Tam ekran sınırında kalan mobil dostu kutumuz
+            <div class="truncate-text" title="Bu çok uzun bir iban veya sipariş numarası olabilir">
+                bla bla bla bla bla dfjxv sdfsd sdf sdf sdf sdf sdfsdfsdfsd sfsdf sdfsfd
+            </div>
+        </div>
+    </div>
+</body>
+</html>

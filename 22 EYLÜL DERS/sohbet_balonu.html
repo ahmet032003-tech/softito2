@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sohbet Mesajı Mobil</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            background: #e2e8f0;
+            padding: 20px;
+        }
+
+        .chat-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: flex-end;
+        }
+
+        /* Giden mesajları sağa yaslar ve sırasını tersine çevirir */
+        .chat-row.outgoing {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: blue;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* Yazım hatası düzeltildi: .message-content */
+        .message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px 16px 16px 2px; /* Sol alt köşe düzeltildi */
+            max-width: 75%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Gölge yumuşatıldı */
+        }
+
+        /* Giden mesaj balonu için oval kenar ayarı */
+        .chat-row.outgoing .message-content {
+            border-radius: 16px 16px 2px 16px; /* Sağ alt köşe düzeltildi */
+            background: #dcf8c6; /* İsteğe bağlı: WhatsApp tarzı açık yeşil tonu */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Gelen Mesaj -->
+    <div class="chat-row">
+        <div class="avatar">SÇ</div>
+        <div class="message-content">
+            <strong>Selahaddin Hoca:</strong>
+            <p>Arkadaşlar flexbox mantığını kavradıkmı?Bence Shad tam olarak kavrayamadı gibi :)</p>
+        </div>
+    </div>
+
+    <!-- Giden Mesaj -->
+    <div class="chat-row outgoing">
+        <div class="avatar" style="background: #10b981;">SM</div>
+        <div class="message-content">
+            <p>Hocam ben anladım ya neden böyle diyorsunuz.Bende Html css artık yazabilirim gibi geliyor :P</p>
+        </div>
+    </div>
+
+</body>
+</html>
