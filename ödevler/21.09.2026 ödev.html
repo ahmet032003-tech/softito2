@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martı TAG</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: lawngreen;
+            padding: 20px;
+            max-width: 500px;
+            margin: auto;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid whitesmoke;
+        }
+        details {
+            margin-bottom: 10px;
+            border: 1px solid blanchedalmond;
+            border-radius: 6px;
+            padding: 10px;
+        }
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            color: darkblue;
+        }
+        details[open] { 
+            background: bisque; 
+        }
+        details p {
+            font-size: 13px;
+            color: darkolivegreen;
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+        dialog {
+            border: none;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 360px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        dialog::backdrop {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(3px);
+        }
+        .btn-modal {
+            background: slategray;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        video, iframe {
+            width: 100%;
+            border-radius: 6px;
+            border: none;
+            margin-bottom: 10px;
+        }
+        meter {
+            width: 100%;
+            height: 20px;
+        }
+        .percentage-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: darkolivegreen;
+            margin-top: 6px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h3>Martı TAG - Tek Araçla Git</h3>
+        
+        <video controls playsinline>
+            <source src="https://assets.mixkit.co/videos/72/72-720.mp4" type="video/mp4">
+            Tarayıcınız video etiketini desteklemiyor.
+        </video>
+
+        <iframe height="200" src="https://www.youtube.com/watch?v=i5EmSRXZaIQ" title="Martı TAG Tanıtım" allowfullscreen></iframe>
+    </div>
+
+    <div class="box">
+        <h3>Sürücü Stok / Yoğunluk Durumu</h3>
+        <label style="font-size: 13px; font-weight: bold; color: darkolivegreen;">Bölgedeki Aktif Sürücü Oranı:</label>
+        <meter min="0" max="100" low="30" high="70" optimum="90" value="85"></meter>
+        <!-- Yeşil barın altına eklenen doluluk yüzdesi -->
+        <span class="percentage-label">Mevcut Doluluk Yüzdesi: %85</span>
+    </div>
+
+    <div class="box">
+        <h3>Sıkça Sorulan Sorular</h3>
+        <details open>
+            <summary>Martı TAG nedir?</summary>
+            <p>Martı TAG, aynı yöne giden sürücüler ile yolcuları bir araya getiren güvenli yolculuk paylaşım platformudur.</p>
+        </details>
+        <details>
+            <summary>Yolculuk ücreti nasıl ödenir?</summary>
+            <p>Uygulama üzerinden belirtilen tahmini tutar doğrultusunda ödemeyi sürücü ile paylaşabilirsiniz.</p>
+        </details>
+        <details>
+            <summary>Güvenli midir?</summary>
+            <p>Tüm sürücülerin belgeleri sistem tarafından kontrol edilmekte olup, 7/24 canlı destek hizmeti sunulmaktadır.</p>
+        </details>
+    </div>
+
+    <div class="box">
+        <h3>Detaylı Bilgi ve Kurallar</h3>
+        <p style="font-size: 13px; color: rgb(225, 106, 9);">Aşağıdaki butona basarak detaylı bilgileri görüntüleyebilirsiniz.</p>
+        <button class="btn-modal" onclick="document.getElementById('tagModal').showModal()">Detaylı Bilgi Al</button>
+    </div>
+
+    <dialog id="tagModal">
+        <h3 style="margin-top: 0;">Martı TAG Kullanım Şartları</h3>
+        <p style="font-size: 13px; color: #475569;">Yolculuk öncesi dikkat edilmesi gereken hususlar:</p>
+        <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; font-size: 13px; color: black;">
+            • Araç içerisinde sigara içilmesi kesinlikle yasaktır.<br>
+            • Emniyet kemeri takmak zorunludur.<br>
+            • Yolculuk sonunda sürücüyü puanlamayı unutmayın.
+        </div>
+        <div style="margin-top: 16px; text-align: right;">
+            <button onclick="document.getElementById('tagModal').close()" style="padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                Kapat
+            </button>
+        </div>
+    </dialog>
+
+</body>
+</html>
