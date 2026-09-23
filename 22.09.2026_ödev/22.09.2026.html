@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RouteGo - Akıllı Rotalama</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --uyari-kirmizisi: red;
+            --palet-yesil: #06290F;
+            --ordek-kahve: #341c09;
+            --ordek-kahve-acik: #0e234c;
+            --ordek-kahve-yumusak: #28340b;
+            --palet-beyaz: #FFFFFF;
+
+            /* Arayüz Derlemeleri */
+            --arka-plan: var(--ordek-kahve);
+            --kart-yuzeyi: var(--ordek-kahve-acik);
+            --kenarlik-rengi: rgba(255, 255, 255, 0.18);
+            --metin-beyaz: var(--palet-beyaz);
+            --metin-gri: #f1d6c0;            /* Krem/Açık Kahve Tonu Metin */
+        }
+
+        body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            background-color: var(--arka-plan);
+            color: var(--metin-beyaz);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .telefon-kutusu {
+            width: 100%;
+            max-width: 480px;
+            background: var(--kart-yuzeyi);
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid var(--kenarlik-rengi);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            padding-bottom: 95px;
+        }
+
+        .ust-menü-cubugu {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(24, 38, 4, 0.94);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--kenarlik-rengi);
+        }
+
+        .marka-alani {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-emoji {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            border: 2px solid var(--palet-yesil);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+
+        .marka-basligi {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--metin-beyaz);
+        }
+
+        .marka-basligi .route-kismi { color: var(--palet-beyaz); }
+        .marka-basligi .go-kismi { color: #715f0d; }
+
+        .slogan-yazisi {
+            font-size: 9px;
+            color: var(--metin-gri);
+            font-weight: 600;
+        }
+
+        .ayar-butonu {
+            background: transparent;
+            border: none;
+            color: var(--metin-beyaz);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .sayfa-icerigi {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .konum-giris-kutusu {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--kenarlik-rengi);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .konum-satiri {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nokta-simgesi {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .nokta-baslangic { background: #22c55e; }
+        .nokta-varis { background: #f97316; }
+
+        .konum-giris-kutusu input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--metin-beyaz);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .harita-kart {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            background: radial-gradient(circle at 50% 50%, #172419 0%, #0c140d 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8), 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .harita-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Pulsing Pin Animasyonu (yapay zeka ile eklendi) */
+        @keyframes radarPulse {
+            0% { r: 6px; opacity: 0.9; }
+            100% { r: 22px; opacity: 0; }
+        }
+
+        .pulse-halka {
+            animation: radarPulse 2s infinite ease-out;
+            transform-origin: center;
+        }
+
+        .rozet {
+            position: absolute;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+
+        .rozet-optimal {
+            top: 14px;
+            left: 14px;
+            background: rgba(34, 197, 94, 0.9);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .rozet-trafik {
+            top: 14px;
+            right: 14px;
+            background: rgba(249, 115, 22, 0.9);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .algoritma-alani {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .baslik-etiketi {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--metin-gri);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .secenek-cipleri {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .cip-buton {
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--kenarlik-rengi);
+            border-radius: 12px;
+            color: var(--metin-beyaz);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cip-buton:hover,
+        .cip-buton.aktif {
+            background: var(--palet-yesil);
+            border-color: #128230;
+            color: var(--palet-beyaz);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(6, 41, 15, 0.6);
+        }
+        .cip-buton.uyari-butonu:hover,
+        .cip-buton.aktif-uyari {
+            background: var(--uyari-kirmizisi) !important;
+            border-color: #6e0c0c !important;
+            color: var(--palet-beyaz) !important;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6) !important;
+        }
+        /* Durak Listesi */
+        .durak-listesi {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .durak-elemani {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* 5. ZORUNLU KRİTER: Position Fixed Sabit Alt Bar */
+        .sabit-alt-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(62, 30, 6, 0.96);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--kenarlik-rengi);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .rota-ozeti {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ozet-sure {
+            font-size: 20px;
+            font-weight: 800;
+            color: #4ade80;
+        }
+
+        .ozet-mesafe {
+            font-size: 11px;
+            color: var(--metin-gri);
+        }
+
+        .baslat-butonu {
+            background: linear-gradient(135deg, var(--palet-yesil), #0d5420);
+            color: var(--palet-beyaz);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 24px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(6, 41, 15, 0.5);
+            transition: transform 0.2s ease;
+        }
+
+        .baslat-butonu:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Telefon Konteyneri -->
+    <div class="telefon-kutusu">
+
+        <header class="ust-menü-cubugu">
+            <div class="marka-alani">
+                <!-- Ördek Emoji İkonu -->
+                <div class="logo-emoji">🦆</div>
+                <div>
+                    <!-- Marka İsmi -->
+                    <div class="marka-basligi">
+                        <span class="route-kismi">Route</span><span class="go-kismi">Go</span>
+                    </div>
+                    <div class="slogan-yazisi">Kendi yolun, kendi teslimatın.</div>
+                </div>
+            </div>
+            <button class="ayar-butonu">⚙️</button>
+        </header>
+
+        <div class="sayfa-icerigi">
+            <div class="konum-giris-kutusu">
+                <div class="konum-satiri">
+                    <div class="nokta-simgesi nokta-baslangic"></div>
+                    <input type="text" value="Ana Depo / Karaköy" readonly>
+                </div>
+                <div style="height: 1px; background: var(--kenarlik-rengi); margin-left: 20px;"></div>
+                <div class="konum-satiri">
+                    <div class="nokta-simgesi nokta-varis"></div>
+                    <input type="text" value="2 Teslimat Noktası Seçildi" readonly>
+                </div>
+            </div>
+
+            <!-- 3. Kriter: Absolute Rozetli Harita Kartı (Yapay zeka ile yapıldı) -->
+            <div class="harita-kart">
+                <svg class="harita-svg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Izgara Deseni (Arka plan harita hissi için (yapay zeka ile yapıldı) -->
+                        <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#253828" stroke-width="0.6" opacity="0.4"/>
+                        </pattern>
+                        <!-- Parlama Efekti (yapay zeka ile yapıldı) -->
+                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+
+                    <!-- Arka Plan Izgarası (yapay zeka ile yapıldı) -->
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+
+                    <!-- İkincil Ara Yollar (yapay zeka ile yapıldı) -->
+                    <g stroke="#1a2e1d" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8">
+                        <line x1="0" y1="40" x2="400" y2="40" />
+                        <line x1="0" y1="180" x2="400" y2="180" />
+                        <line x1="100" y1="0" x2="100" y2="220" />
+                        <line x1="300" y1="0" x2="300" y2="220" />
+                        <path d="M 30 0 C 120 80, 280 40, 370 220" />
+                    </g>
+
+                    <!-- Ana Bulvarlar (yapay zeka ile yapıldı) -->
+                    <g stroke="#2c4230" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.9">
+                        <path d="M -10 120 Q 140 160 220 90 T 410 110" />
+                        <path d="M 60 -10 Q 90 110 340 230" />
+                    </g>
+
+                    <!-- Rota Parlaması (yapay zeka ile yapıldı) -->
+                    <path d="M 45 135 Q 120 50 200 130 T 345 75" stroke="#22c55e" stroke-width="8" fill="none" opacity="0.3" filter="url(#glow)"/>
+
+                    <!-- Ana Aktif Rota Çizgisi (yapay zeka ile yapıldı) -->
+                    <path d="M 45 135 Q 120 50 200 130 T 345 75" stroke="#22c55e" stroke-width="4" stroke-dasharray="7,4" stroke-linecap="round" fill="none"/>
+
+                    <!-- 1. Başlangıç Noktası (yapay zeka ile yapıldı) (Ana Depo) -->
+                    <g transform="translate(45, 135)">
+                        <circle cx="0" cy="0" r="14" fill="#22c55e" class="pulse-halka" />
+                        <circle cx="0" cy="0" r="7" fill="#22c55e" stroke="#ffffff" stroke-width="2"/>
+                    </g>
+
+                    <!-- Ara Durak 1 (yapay zeka ile yapıldı) -->
+                    <g transform="translate(125, 72)">
+                        <circle cx="0" cy="0" r="11" fill="#1e293b" stroke="#ffffff" stroke-width="2" />
+                        <text x="0" y="4" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">1</text>
+                    </g>
+
+                    <!-- Ara Durak 2 (yapay zeka ile yapıldı) -->
+                    <g transform="translate(200, 130)">
+                        <circle cx="0" cy="0" r="11" fill="#1e293b" stroke="#ffffff" stroke-width="2" />
+                        <text x="0" y="4" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">2</text>
+                    </g>
+
+                    <!-- Varış Noktası (Hedef) (yapay zeka ile yapıldı) -->
+                    <g transform="translate(345, 75)">
+                        <circle cx="0" cy="0" r="14" fill="#f97316" class="pulse-halka" />
+                        <circle cx="0" cy="0" r="8" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+                        <circle cx="0" cy="0" r="3" fill="#ffffff"/>
+                    </g>
+                </svg>
+
+                <span class="rozet rozet-optimal">EN OPTİMAL ROTA</span>
+                <span class="rozet rozet-trafik">AKICI TRAFİK</span>
+            </div>
+
+            <!-- 4. Kriter: Algoritma Çipleri -->
+            <div class="algoritma-alani">
+                <span class="baslik-etiketi">Rotalama Algoritması</span>
+                <div class="secenek-cipleri">
+                    <button class="cip-buton">Rotaya Ekleme yap</button>
+                    <button class="cip-buton">Müşteri ile İletişime Geç</button>
+                    <button class="cip-buton">Canlı Desteğe Bağlan</button>
+                    <button class="cip-buton uyari-butonu">Sürüşü İptal Et</button>
+                </div>
+            </div>
+
+            <div class="algoritma-alani">
+                <span class="baslik-etiketi">Sıralı Duraklar</span>
+                <div class="durak-listesi">
+                    <div class="durak-elemani">
+                        <span>1. Aslanlar Giyim/Kadıköy</span>
+                        <strong style="color: #f2a663;">2.4 km</strong>
+                    </div>
+                    <div class="durak-elemani">
+                        <span>2. Kardeşler Hırdavat/Ataşehir</span>
+                        <strong style="color: #f2a663;">5.1 km</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sabit-alt-bar">
+            <div class="rota-ozeti">
+                <span class="ozet-sure">28 Dk</span>
+                <span class="ozet-mesafe">18.4 km • %15 Yakıt Tasarrufu</span>
+            </div>
+            <button class="baslat-butonu">Rotayı Başlat 🚗</button>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
