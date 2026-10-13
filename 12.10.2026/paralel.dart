@@ -29,6 +29,15 @@ void main(){
   controller.sink.add(20);
   controller.sink.add(30);
 
+final broadcastStream=controller.:stream.asBroadcastStream();
+broadcastStream.listen((d) => print("UI Ekranı: +d"));
+broadcastStream.listen((d) => print("Analitik Servisi Ekranı: $d"));
+
+
+
+
+
   controller.close();
+
     
 }
