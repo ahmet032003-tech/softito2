@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // ==========================================
+        // 1. EVENT LOOP & ONCELIK SIRALAMASI
+        // ==========================================
+
+        console.log("1.Sıra Klinik Sitesi Açıldı");
+
+        // Macrotask Queue (En son çalışır)
+        setTimeout(() => {
+            console.log("2.Sıram (zamanlayıcı): Randevu Hatırlatma Sms'i gönderildi(Macro Task)");
+        }, 0);
+
+        // Microtask Queue (Senkron kodlardan hemen sonra, Macrotask'ten önce çalışır)
+        Promise.resolve().then(() => {
+            console.log("3.Promise:Vip müşteri öncelikli kaydı alındı(micro task)");
+        });
+
+        console.log("4.Resepsiyon işlemleri devam ediyor");
+
+
+        // ==========================================
+        // 2. CALLBACK HELL vs MODERN ASYNC/AWAIT
+        // ==========================================
+
+        // --- A) Eski / Karmaşık Yöntem (Callback Hell) ---
+        /*
+        danisanBul("Selin Kaya", (danisan) => {
+            ciltTipiAnalizEt(danisan.id, (analiz) => {
+                uygunSerumBelirle(analiz.tip, (serum) => {
+                    stosDus(serum.id, (fatura) => {
+                        console.log("İşlem Tamamlandı", fatura);
+                    });
+                });
+            });
+        });
+        */
+
+        // --- B) Modern & Temiz Yöntem (Async / Await) ---
+        async function danisanIslemleriniYonet(isim) {
+            try {
+                const danisan = await danisanBul(isim);
+                const analiz = await ciltTipiAnalizEt(danisan.id);
+                const serum = await uygunSerumBelirle(analiz.tip);
+                const fatura = await stosDus(serum.id);
+
+                console.log("İşlem Tamamlandı", fatura);
+            } catch (error) {
+                console.error("İşlem sırasında hata oluştu:", error);
+            }
+        }
+
+        // Fonksiyon Çağrısı
+        danisanIslemleriniYonet("Selin Kaya");
+
+        const randevuOlustur = (danisanAdi, hizmet, uzmanMusaitMi) => {
+            return new Promise((resolve, reject) => {
+                console.log(`${danisanAdi} için "${hizmet}" seansı sorgulanıyor`);
+
+                setTimeout(() => {
+                    if (uzmanMusaitMi) {
+                        const randevuDetay = {
+                            takipNo: "BİO-" + Math.floor(1000 + Math.random() * 9000),
+                            danisan: danisanAdi,
+                            hizmet: hizmet,
+                            saat: "14:30",
+                            onaylandi: true
+                        };
+                        resolve(randevuDetay); // Başarılı durumda randevu detayını döndürür
+                    } else {
+                        reject("Uzman belirtilen saatte müsait değil."); // Başarısız durumda hata mesajı döndürür
+                    }
+                }, 1000); // Örn: 1 saniyelik simüle edilmiş gecikme
+            });
+        };
+
+        randevuOlustur("Meryem Tur", "Medikal Bakım", true)
+            .then((randevu) => {
+                console.log("Randevu Onaylandı", randevu);
+                return `Kayıt No: ${randevu.takipNo}`;
+            })
+            .then((kayitMesaji) => {
+                console.log(kayitMesaji); // Dönüş değerini bir sonraki .then ile yakalayabilirsiniz
+            })
+            .catch((hata) => {
+                console.error("Hata:", hata);
+            });
+
+        const seansUcretiHesapla = (hizmetTipi) => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const tarifeler = {
+                        "Lazer Epilasyon": 2800,
+                        "İğneli Epilasyon": 4500,
+                        "Lipo": 6500
+                    };
+                    resolve(tarifeler[hizmetTipi] || 1500);
+                }, 1000);
+            });
+        };
+        const randevuSureciBasla = async (danisan, hizmet) => {
+            try {
+                console.log(`1.Adım ${danisan} için işlem başlatılıyor`);
+                const randevu = await randevuOlustur(danisan, hizmet, true);
+                console.log(`2.Adım Randevu Onaylandı.Takip No:${randevu.takipNo}`);
+
+                const tutar = await seansUcretiHesapla(hizmet);
+                console.log(`3.Adım Seans Ücreti: ${tutar} ₺ Kdv dahildir.  Kayıt Tamamlandı!`);
+
+                return { basarili: true, takipNo: randevu.takipNo, toplam: tutar };
+            } catch (error) {
+
+            }
+            
+            
+        };
+        
+    </script>
+</body>
+
+</html>
