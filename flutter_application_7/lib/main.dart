@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/storage_ve_fcm_ekrani.dart';
-
+//notification çalışır hale gelecek
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
